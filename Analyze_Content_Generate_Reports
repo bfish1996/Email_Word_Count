@@ -1,0 +1,23 @@
+from datetime import datetime, timedelta
+
+def count_words(text):
+    # Remove HTML tags if any and count words
+    clean_text = re.sub('<[^<]+?>', '', text)
+    words = clean_text.split()
+    return len(words)
+
+def filter_emails_by_date(emails, days):
+    cutoff_date = (datetime.now() - timedelta(days=days)).timestamp() * 1000
+    return [email for email in emails if float(email['date']) > cutoff_date]
+
+def generate_report(emails):
+    reports = {}
+    for period in [7, 14, 30]:
+        filtered_emails = filter_emails_by_date(emails, period)
+        total_words = sum(count_words(email['body']) for email in filtered_emails)
+        reports[f'Last {period} days'] = total_words
+    return reports
+
+report = generate_report(emails)
+for period, word_count in report.items():
+    print(f"{period}: {word_count} words")
